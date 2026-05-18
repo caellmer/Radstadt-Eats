@@ -2237,3 +2237,47 @@ a {
     grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
   }
 }
+
+/* CDN Fallback Offline styling */
+.map-offline-fallback {
+  animation: fadeIn var(--transition-medium) forwards;
+}
+
+.map-offline-fallback i {
+  color: var(--text-muted);
+  animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+}
+
+/* Custom Marker Hover effect */
+.custom-map-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  box-shadow: 0 4px 10px rgba(15, 52, 42, 0.25);
+  transition: all var(--transition-fast);
+}
+
+.custom-map-marker:hover {
+  transform: scale(1.2) translateY(-2px);
+  box-shadow: 0 6px 14px rgba(15, 52, 42, 0.4);
+}

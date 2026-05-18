@@ -327,6 +327,82 @@ const RESTAURANT_DATA = [
     reviews: [
       { author: "Klaus H.", rating: 4, date: "2026-05-04", comment: "Solid Pad Thai and very fast delivery. Excellent sushi!" }
     ]
+  },
+  {
+    id: "gasthofpost",
+    name: "Gasthof & Restaurant Post",
+    cuisine: "Traditional Austrian",
+    priceLevel: 2, // €€
+    rating: 4.6,
+    address: "Hauptplatz 16, 5550 Radstadt",
+    phone: "+43 6452 4306",
+    coordinates: [47.3801, 13.4655],
+    features: ["vegetarian", "outdoorSeating", "historic"],
+    vibes: ["Traditional Stube", "Historic Hotel", "Town Square Patio"],
+    description: "Dating back to the 16th century, Gasthof Post is a cornerstone of Radstadt's town square. Offering a warm alpine atmosphere with exquisite pine-wood paneling, it serves premium Austrian classics including tender beef Tafelspitz, hand-caught alpine trout, and their legendary sweet blueberry Kaiserschmarrn.",
+    imageGrad: "linear-gradient(135deg, #1d4d3f 0%, #d99f45 100%)",
+    hours: {
+      0: [{ open: "11:00", close: "22:00" }],
+      1: [{ open: "11:00", close: "22:00" }],
+      2: [{ open: "11:00", close: "22:00" }],
+      3: [{ open: "11:00", close: "22:00" }],
+      4: [{ open: "11:00", close: "22:00" }],
+      5: [{ open: "11:00", close: "22:00" }],
+      6: [{ open: "11:00", close: "22:00" }]
+    },
+    menu: [
+      {
+        title: "Austrian Classics",
+        items: [
+          { id: "post-main-1", name: "Zarter Tafelspitz vom Milchkalb", description: "Gently simmered tender beef rump served with traditional chive sauce, apple horseradish, creamed spinach, and hash browns.", price: 21.50, tags: [] },
+          { id: "post-main-2", name: "Klassisches Wiener Schnitzel", description: "Pan-fried golden breaded veal cutlet served with wild parsley potatoes and wild lingonberry jam.", price: 19.80, tags: [] },
+          { id: "post-main-3", name: "Hausgemachte Kaspressknödel", description: "Sautéed cheese dumplings served on fresh mixed alpine salad with pumpkin seed oil dressing.", price: 12.40, tags: ["vegetarian"] },
+          { id: "post-des-1", name: "Heidelbeer-Kaiserschmarrn", description: "Shredded sweet pancake with wild forest blueberries, caramelized sugar, served with stewed plums.", price: 9.80, tags: ["vegetarian"] }
+        ]
+      }
+    ],
+    reviews: [
+      { author: "Sabine K.", rating: 5, date: "2026-05-16", comment: "The historical Stube is incredibly cozy. Tafelspitz was extremely tender, and the blueberry pancake is a must-try!" },
+      { author: "Michael B.", rating: 4, date: "2026-05-02", comment: "Friendly team, fast service right on the main square. Food is extremely authentic!" }
+    ]
+  },
+  {
+    id: "braeupfandl",
+    name: "Restaurant Bräupfandl",
+    cuisine: "Steakhouse & Grill",
+    priceLevel: 3, // €€€
+    rating: 4.8,
+    address: "Salzburger Str. 3, 5550 Radstadt",
+    phone: "+43 6452 7431",
+    coordinates: [47.3808, 13.4622],
+    features: ["vegetarian", "outdoorSeating", "delivery"],
+    vibes: ["Cozy Tavern", "Rustic Grill", "Steak Enthusiasts"],
+    description: "Highly cherished by locals for its rustic fire-grilled charm, Bräupfandl specializes in sizzling cast-iron skillet dishes and prime cuts. Famous for dry-aged steaks, tender wood-smoked spare ribs, and regional alpine pan-dishes.",
+    imageGrad: "linear-gradient(135deg, #a63a2b 0%, #152d26 100%)",
+    hours: {
+      0: [{ open: "17:00", close: "23:00" }],
+      1: [{ open: "17:00", close: "23:00" }],
+      2: [{ open: "17:00", close: "23:00" }],
+      3: [], // Wednesday Ruhetag
+      4: [{ open: "17:00", close: "23:00" }],
+      5: [{ open: "17:00", close: "23:00" }],
+      6: [{ open: "17:00", close: "23:00" }]
+    },
+    menu: [
+      {
+        title: "From the Fire Grill & Pans",
+        items: [
+          { id: "braeu-steak-1", name: "Ribeye Steak vom Pinzgauer Rind (250g)", description: "Char-grilled prime aged beef ribeye served with fresh herb butter, grilled vegetables, and rustic garlic fries.", price: 29.50, tags: ["glutenFree"] },
+          { id: "braeu-pan-1", name: "Sizzling Bräupfandl Spezialität", description: "Local venison medallions and pork tenderloin served sizzling in a hot cast-iron pan with bacon, mushrooms, spaetzle noodles, and creamy pepper sauce.", price: 24.80, tags: [] },
+          { id: "braeu-veg-1", name: "Steinpilz-Waldpfandl", description: "Sautéed alpine porcini and wild chanterelle mushrooms in creamy herb sauce, served with bread dumpling.", price: 16.90, tags: ["vegetarian"] },
+          { id: "braeu-ribs-1", name: "Honig-Knoblauch Spareribs", description: "Slow-baked local pork spare ribs glazed with honey-garlic marinade, served with baked potato and garlic herb dip.", price: 18.50, tags: ["glutenFree"] }
+        ]
+      }
+    ],
+    reviews: [
+      { author: "Thomas R.", rating: 5, date: "2026-05-15", comment: "Incredible meat quality! The ribeye was grilled to absolute medium-rare perfection. Cozy atmosphere." },
+      { author: "Julia M.", rating: 5, date: "2026-05-08", comment: "The skillet pan dish is gigantic and incredibly delicious. Always a great dining experience." }
+    ]
   }
 ];
 
@@ -421,96 +497,146 @@ function playSuccessChime() {
 }
 
 // --------------------------------------------------------------------------
+// safeCreateIcons Helper
+// --------------------------------------------------------------------------
+function safeCreateIcons() {
+  if (typeof lucide !== "undefined") {
+    try {
+      lucide.createIcons();
+    } catch (e) {
+      console.warn("Lucide execution failed:", e);
+    }
+  } else {
+    console.warn("Lucide library not loaded.");
+  }
+}
+
+// --------------------------------------------------------------------------
 // 4. MAP COORDINATOR (Leaflet Setup)
 // --------------------------------------------------------------------------
 let mapInstance = null;
 let mapMarkers = [];
 
 function initMap() {
-  // Radstadt center coordinates
-  const radstadtCoords = [47.3800, 13.4650];
+  const mapContainer = document.getElementById("map");
+  if (!mapContainer) return;
 
-  // Set up Map
-  mapInstance = L.map('map', {
-    center: radstadtCoords,
-    zoom: 14.5,
-    zoomControl: true,
-    scrollWheelZoom: true
-  });
+  if (typeof L === "undefined") {
+    console.warn("Leaflet library not loaded. Interactive map is offline.");
+    mapContainer.innerHTML = `
+      <div class="map-offline-fallback" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; padding:20px; text-align:center; background:var(--bg-tertiary); color:var(--text-secondary); border-radius: var(--border-radius-md);">
+        <i data-lucide="map-off" style="width:40px; height:40px; margin-bottom:12px; color:var(--text-muted);"></i>
+        <h3 style="font-size:15px; margin-bottom:6px; font-family:var(--font-body); font-weight:600;">Map Offline / CDN Blocked</h3>
+        <p style="font-size:12px; max-width:280px; line-height:1.4; margin: 0 auto;">Connecting to the Leaflet map server is blocked or offline. All listings, food menus, spin wheel, tables, and checkout actions remain fully operational!</p>
+      </div>
+    `;
+    setTimeout(() => {
+      safeCreateIcons();
+    }, 50);
+    return;
+  }
 
-  // Custom styled tile layer (CartoDB Positron - looks gorgeous and responds to dark filter)
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains: 'abcd',
-    maxZoom: 20
-  }).addTo(mapInstance);
+  try {
+    // Radstadt center coordinates
+    const radstadtCoords = [47.3800, 13.4650];
 
-  renderMarkers();
+    // Set up Map
+    mapInstance = L.map('map', {
+      center: radstadtCoords,
+      zoom: 14.5,
+      zoomControl: true,
+      scrollWheelZoom: true
+    });
+
+    // Custom styled tile layer (CartoDB Positron - looks gorgeous and responds to dark filter)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 20
+    }).addTo(mapInstance);
+
+    renderMarkers();
+  } catch (e) {
+    console.error("Error initializing Leaflet map:", e);
+  }
 }
 
 function renderMarkers() {
-  // Clear previous markers
-  mapMarkers.forEach(marker => mapInstance.removeLayer(marker));
-  mapMarkers = [];
+  if (typeof L === "undefined" || !mapInstance) return;
 
-  // Filter matching restaurants in the DB
-  const currentFiltered = getFilteredRestaurants();
+  try {
+    // Clear previous markers
+    mapMarkers.forEach(marker => {
+      if (mapInstance.hasLayer(marker)) {
+        mapInstance.removeLayer(marker);
+      }
+    });
+    mapMarkers = [];
 
-  currentFiltered.forEach(restaurant => {
-    // Generate custom marker element using Leaflet DivIcon
-    let iconHTML = `<div class="custom-map-marker" style="background-color: var(--color-primary); color: var(--color-accent); border: 2px solid var(--bg-secondary);">`;
+    // Filter matching restaurants in the DB
+    const currentFiltered = getFilteredRestaurants();
 
-    // Choose appropriate inner icon based on cuisine
-    switch (restaurant.cuisine) {
-      case "Italian":
-        iconHTML += `<i data-lucide="pizza" style="width: 14px; height: 14px;"></i>`;
-        break;
-      case "Cafe & Bakery":
-        iconHTML += `<i data-lucide="coffee" style="width: 14px; height: 14px;"></i>`;
-        break;
-      case "Asian":
-        iconHTML += `<i data-lucide="fish" style="width: 14px; height: 14px;"></i>`;
-        break;
-      case "Indian & Fast Food":
-        iconHTML += `<i data-lucide="flame" style="width: 14px; height: 14px;"></i>`;
-        break;
-      case "Alpine Hut":
-        iconHTML += `<i data-lucide="mountain" style="width: 14px; height: 14px;"></i>`;
-        break;
-      default: // Austrian / Fine Dining
-        iconHTML += `<i data-lucide="utensils" style="width: 14px; height: 14px;"></i>`;
-    }
-    iconHTML += `</div>`;
+    currentFiltered.forEach(restaurant => {
+      // Generate custom marker element using Leaflet DivIcon
+      let iconHTML = `<div class="custom-map-marker" style="background-color: var(--color-primary); color: var(--color-accent); border: 2px solid var(--bg-secondary);">`;
 
-    const customIcon = L.divIcon({
-      html: iconHTML,
-      className: "custom-leaflet-icon",
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -32]
+      // Choose appropriate inner icon based on cuisine
+      switch (restaurant.cuisine) {
+        case "Italian":
+          iconHTML += `<i data-lucide="pizza" style="width: 14px; height: 14px;"></i>`;
+          break;
+        case "Cafe & Bakery":
+          iconHTML += `<i data-lucide="coffee" style="width: 14px; height: 14px;"></i>`;
+          break;
+        case "Asian":
+          iconHTML += `<i data-lucide="fish" style="width: 14px; height: 14px;"></i>`;
+          break;
+        case "Indian & Fast Food":
+          iconHTML += `<i data-lucide="flame" style="width: 14px; height: 14px;"></i>`;
+          break;
+        case "Alpine Hut":
+          iconHTML += `<i data-lucide="mountain" style="width: 14px; height: 14px;"></i>`;
+          break;
+        case "Steakhouse & Grill":
+          iconHTML += `<i data-lucide="flame" style="width: 14px; height: 14px;"></i>`;
+          break;
+        default: // Austrian / Fine Dining
+          iconHTML += `<i data-lucide="utensils" style="width: 14px; height: 14px;"></i>`;
+      }
+      iconHTML += `</div>`;
+
+      const customIcon = L.divIcon({
+        html: iconHTML,
+        className: "custom-leaflet-icon",
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
+      });
+
+      // Create Leaflet marker
+      const marker = L.marker(restaurant.coordinates, { icon: customIcon }).addTo(mapInstance);
+
+      // Custom popup styled layout
+      const popupContent = `
+        <div class="map-popup-card">
+          <h4 style="font-family: var(--font-body); font-weight:700; font-size:14px; margin-bottom:2px; color: #0b1c18;">${restaurant.name}</h4>
+          <span style="font-size:11px; text-transform:uppercase; color:var(--color-accent); font-weight:600;">${restaurant.cuisine}</span>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+            <span style="font-weight:700; font-size:12px; color: #0f342a;">⭐ ${restaurant.rating}</span>
+            <button onclick="window.openDetailModal('${restaurant.id}')" style="background-color:#0f342a; color:#d99f45; border-radius:4px; padding:4px 8px; font-size:10px; font-weight:600;">View Menu</button>
+          </div>
+        </div>
+      `;
+
+      marker.bindPopup(popupContent);
+      mapMarkers.push(marker);
     });
 
-    // Create Leaflet marker
-    const marker = L.marker(restaurant.coordinates, { icon: customIcon }).addTo(mapInstance);
-
-    // Custom popup styled layout
-    const popupContent = `
-      <div class="map-popup-card">
-        <h4 style="font-family: var(--font-body); font-weight:700; font-size:14px; margin-bottom:2px; color: #0b1c18;">${restaurant.name}</h4>
-        <span style="font-size:11px; text-transform:uppercase; color:var(--color-accent); font-weight:600;">${restaurant.cuisine}</span>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-          <span style="font-weight:700; font-size:12px; color: #0f342a;">⭐ ${restaurant.rating}</span>
-          <button onclick="window.openDetailModal('${restaurant.id}')" style="background-color:#0f342a; color:#d99f45; border-radius:4px; padding:4px 8px; font-size:10px; font-weight:600;">View Menu</button>
-        </div>
-      </div>
-    `;
-
-    marker.bindPopup(popupContent);
-    mapMarkers.push(marker);
-  });
-
-  // Re-instantiate icons inside Leaflet divs
-  setTimeout(() => lucide.createIcons(), 50);
+    // Re-instantiate icons inside Leaflet divs
+    setTimeout(() => safeCreateIcons(), 50);
+  } catch (e) {
+    console.error("Error rendering markers:", e);
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -734,7 +860,7 @@ function renderRestaurantGrid() {
   }).join("");
 
   // Re-instantiate icons
-  lucide.createIcons();
+  safeCreateIcons();
 }
 
 window.selectCuisine = function (cuisineName) {
@@ -869,7 +995,7 @@ function renderModalMenu(res) {
     </div>
   `).join("");
 
-  lucide.createIcons();
+  safeCreateIcons();
 }
 
 function renderModalReviews(res) {
@@ -945,7 +1071,7 @@ function renderModalReviews(res) {
     `;
   }).join("");
 
-  lucide.createIcons();
+  safeCreateIcons();
 }
 
 function renderOpeningHoursSchedule(res) {
@@ -1289,7 +1415,7 @@ function updateCartUI() {
   document.getElementById("cart-delivery").textContent = `€${deliveryFee.toFixed(2)}`;
   document.getElementById("cart-grandtotal").textContent = `€${grandTotal.toFixed(2)}`;
 
-  lucide.createIcons();
+  safeCreateIcons();
 }
 
 window.adjustCartQty = function (itemId, amount) {
@@ -1406,7 +1532,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     playTickSound();
-    lucide.createIcons();
+    safeCreateIcons();
 
     // Refresh map layout styles for Leaflet
     if (mapInstance) {
@@ -1512,7 +1638,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     playTickSound();
-    lucide.createIcons();
+    safeCreateIcons();
 
     // Redraw map tiles safely
     setTimeout(() => {
