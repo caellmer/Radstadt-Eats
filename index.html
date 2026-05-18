@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Radstadt Eats | Alpine Dining Guide & Portal</title>
+  <meta name="description"
+    content="Explore local restaurants, cafes, and alpine huts in Radstadt, Austria. Browse interactive menus, book tables, order takeaway, and spin the dining wheel!">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+    rel="stylesheet">
+
+  <!-- Leaflet.js (Map Library) CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+  <!-- Custom CSS stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Lucide Icons (CDN) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="logo-area" id="btn-logo-home">
+        <div class="logo-icon">
+          <i data-lucide="utensils-crossed"></i>
+        </div>
+        <div class="logo-text">
+          <h1>Radstadt Eats</h1>
+          <span>Alpine Culinary Guide</span>
+        </div>
+      </div>
+
+      <!-- Top Action Bar -->
+      <div class="header-actions">
+        <button class="action-btn" id="btn-spin-wheel" title="Decision Wheel">
+          <i data-lucide="dices"></i>
+          <span>Decide-O-Matic</span>
+        </button>
+        <button class="action-btn" id="btn-theme-toggle" title="Toggle Theme">
+          <i data-lucide="moon" id="theme-icon"></i>
+        </button>
+        <button class="action-btn cart-badge-container" id="btn-cart-toggle" title="View Cart">
+          <i data-lucide="shopping-basket"></i>
+          <span class="cart-count" id="cart-counter">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Filter & Search Bar -->
+  <section class="search-filter-section">
+    <div class="filter-container">
+      <div class="search-box">
+        <i data-lucide="search" class="search-icon"></i>
+        <input type="text" id="search-input" placeholder="Search by restaurant name, food, or keywords...">
+        <button class="clear-search" id="btn-clear-search" style="display: none;">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <div class="cuisine-chips-wrapper">
+        <div class="cuisine-chips" id="cuisine-chips-container">
+          <!-- Dynamically populated tags -->
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button class="filter-toggle-btn" id="btn-toggle-advanced-filters">
+          <i data-lucide="sliders-horizontal"></i>
+          <span>Refine Filters</span>
+          <span class="active-filter-badge" id="active-filters-count" style="display: none;">0</span>
+        </button>
+
+        <div class="sort-selector">
+          <label for="sort-select">Sort by:</label>
+          <select id="sort-select">
+            <option value="rating">Top Rated ⭐</option>
+            <option value="alphabetical">Name (A-Z)</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Advanced Filter Drawer -->
+    <div class="advanced-filters-panel" id="advanced-filters-panel" style="display: none;">
+      <div class="advanced-filters-grid">
+        <div class="filter-group">
+          <h3>Dietary Restrictions</h3>
+          <label class="checkbox-label">
+            <input type="checkbox" class="feature-checkbox" value="vegetarian">
+            <span>Vegetarian Friendly</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" class="feature-checkbox" value="vegan">
+            <span>Vegan Options</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" class="feature-checkbox" value="glutenFree">
+            <span>Gluten-Free Available</span>
+          </label>
+        </div>
+
+        <div class="filter-group">
+          <h3>Vibe & Ambiance</h3>
+          <label class="checkbox-label">
+            <input type="checkbox" class="feature-checkbox" value="outdoorSeating">
+            <span>Outdoor Seating / Terrace</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" class="feature-checkbox" value="historic">
+            <span>Historic Building</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" class="feature-checkbox" value="panoramic">
+            <span>Panoramic Mountain Views</span>
+          </label>
+        </div>
+
+        <div class="filter-group">
+          <h3>Availability</h3>
+          <label class="checkbox-label">
+            <input type="checkbox" id="open-now-checkbox">
+            <span>Open Now</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" class="feature-checkbox" value="delivery">
+            <span>Takeaway & Delivery</span>
+          </label>
+        </div>
+      </div>
+      <div class="advanced-filters-actions">
+        <button class="btn btn-secondary" id="btn-reset-filters">Reset All Filters</button>
+        <button class="btn btn-primary" id="btn-apply-filters">Apply Filters</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Split Layout -->
+  <main class="main-layout">
+    <!-- Left Section: Interactive Map -->
+    <section class="map-panel" id="map-panel">
+      <div class="map-header">
+        <div class="map-title-bar">
+          <i data-lucide="map-pin"></i>
+          <h2>Explore Radstadt Map</h2>
+        </div>
+        <button class="map-toggle-size-btn" id="btn-toggle-map" title="Expand/Collapse Map">
+          <i data-lucide="maximize-2" id="map-toggle-icon"></i>
+        </button>
+      </div>
+      <!-- Leaflet map container -->
+      <div id="map"></div>
+    </section>
+
+    <!-- Right Section: Restaurant Listings Grid -->
+    <section class="listings-panel">
+      <div class="listings-header">
+        <h2 id="listings-results-title">Local Dining Places</h2>
+        <span class="results-count" id="results-count">Showing 8 locations</span>
+      </div>
+      <div class="restaurant-grid" id="restaurant-grid">
+        <!-- Dynamic restaurant cards generated in JS -->
+      </div>
+      <div class="no-results" id="no-results-view" style="display: none;">
+        <i data-lucide="frown" class="no-results-icon"></i>
+        <h3>No food spots match your criteria</h3>
+        <p>Try resetting some filters or searching for different dishes.</p>
+        <button class="btn btn-primary" id="btn-reset-all-filters-fallback">Reset All Filters</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Interactive Detail Modal -->
+  <div class="modal-overlay" id="restaurant-modal" style="display: none;">
+    <div class="modal-card">
+      <button class="modal-close" id="btn-close-modal">
+        <i data-lucide="x"></i>
+      </button>
+
+      <!-- Modal Header with Dynamic Hero Image -->
+      <div class="modal-hero" id="modal-hero-bg">
+        <div class="modal-hero-overlay">
+          <span class="modal-cuisine-badge" id="modal-cuisine">Austrian</span>
+          <h2 class="modal-title" id="modal-name">Restaurant Name</h2>
+          <p class="modal-vibe" id="modal-vibes-list">Historic • Beer Garden</p>
+        </div>
+      </div>
+
+      <!-- Modal Tabs -->
+      <div class="modal-tabs">
+        <button class="tab-btn active" data-tab="menu">
+          <i data-lucide="menu"></i>
+          <span>Menu & Order</span>
+        </button>
+        <button class="tab-btn" data-tab="book">
+          <i data-lucide="calendar"></i>
+          <span>Book Table</span>
+        </button>
+        <button class="tab-btn" data-tab="reviews">
+          <i data-lucide="star"></i>
+          <span>Reviews</span>
+        </button>
+        <button class="tab-btn" data-tab="about">
+          <i data-lucide="info"></i>
+          <span>About & Hours</span>
+        </button>
+      </div>
+
+      <!-- Modal Tab Content -->
+      <div class="modal-body">
+
+        <!-- Tab content 1: Menu & Ordering -->
+        <div class="tab-content" id="tab-menu">
+          <div class="menu-tab-layout">
+            <div class="menu-list" id="modal-menu-list">
+              <!-- Dynamically populated menu sections -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab content 2: Table Booking -->
+        <div class="tab-content" id="tab-book" style="display: none;">
+          <div class="booking-container">
+            <div class="booking-info">
+              <h3>Secure Your Table</h3>
+              <p>Experience Radstadt's best dining risk-free. No prepayment needed, instant booking confirmation.</p>
+              <div class="booking-features">
+                <div class="b-feature"><i data-lucide="check-circle-2"></i> Instant digital receipt</div>
+                <div class="b-feature"><i data-lucide="check-circle-2"></i> Free cancellation anytime</div>
+                <div class="b-feature"><i data-lucide="check-circle-2"></i> Special requests welcome</div>
+              </div>
+            </div>
+
+            <form class="booking-form" id="table-booking-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="booking-date">Date</label>
+                  <input type="date" id="booking-date" required>
+                </div>
+                <div class="form-group">
+                  <label for="booking-time">Time</label>
+                  <input type="time" id="booking-time" min="11:00" max="22:00" required>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="booking-guests">Number of Guests</label>
+                  <select id="booking-guests" required>
+                    <option value="1">1 Person</option>
+                    <option value="2" selected>2 People</option>
+                    <option value="3">3 People</option>
+                    <option value="4">4 People</option>
+                    <option value="5">5 People</option>
+                    <option value="6">6 People</option>
+                    <option value="8">8 People</option>
+                    <option value="10">Large Group (10+)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="booking-name">Full Name</label>
+                <input type="text" id="booking-name" placeholder="Enter your name" required>
+              </div>
+              <div class="form-group">
+                <label for="booking-notes">Special Requests (Allergies, table preferences...)</label>
+                <textarea id="booking-notes" rows="2"
+                  placeholder="Example: window table, vegetarian options, baby chair..."></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Confirm Reservation</button>
+            </form>
+
+            <div class="booking-success" id="booking-success-view" style="display: none;">
+              <div class="success-icon">
+                <i data-lucide="calendar-check-2"></i>
+              </div>
+              <h3>Table Booked Successfully!</h3>
+              <p>Your table reservation at <strong id="success-restaurant-name">Stegerbräu</strong> is confirmed.</p>
+              <div class="booking-details-receipt">
+                <p><strong>Reservation Code:</strong> <span class="code" id="success-booking-code">RST-84910</span></p>
+                <p><strong>Date & Time:</strong> <span id="success-booking-datetime">May 20, 2026 at 18:30</span></p>
+                <p><strong>Guests:</strong> <span id="success-booking-guests">4 People</span></p>
+              </div>
+              <button class="btn btn-secondary btn-block" id="btn-booking-dismiss">Back to Dining Options</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab content 3: Reviews -->
+        <div class="tab-content" id="tab-reviews" style="display: none;">
+          <div class="reviews-tab-layout">
+            <div class="reviews-aggregate">
+              <div class="aggregate-score">
+                <h3 id="modal-reviews-avg">4.7</h3>
+                <div class="stars" id="modal-reviews-stars">
+                  <!-- JS generated stars -->
+                </div>
+                <span id="modal-reviews-count">Based on 15 reviews</span>
+              </div>
+              <div class="rating-bars" id="modal-reviews-bars">
+                <!-- JS generated rating bars -->
+              </div>
+            </div>
+
+            <div class="reviews-section-content">
+              <h3>Guest Reviews</h3>
+              <div class="reviews-list" id="modal-reviews-list">
+                <!-- Dynamically generated individual reviews -->
+              </div>
+
+              <!-- Review Form -->
+              <form class="add-review-form" id="add-review-form">
+                <h3>Leave a Review</h3>
+                <div class="rating-input-group">
+                  <span>Your Rating:</span>
+                  <div class="star-rating-inputs" id="star-inputs">
+                    <i data-lucide="star" class="star-input" data-rating="1"></i>
+                    <i data-lucide="star" class="star-input" data-rating="2"></i>
+                    <i data-lucide="star" class="star-input" data-rating="3"></i>
+                    <i data-lucide="star" class="star-input" data-rating="4"></i>
+                    <i data-lucide="star" class="star-input" data-rating="5"></i>
+                  </div>
+                  <input type="hidden" id="review-rating-value" value="5">
+                </div>
+                <div class="form-group">
+                  <label for="review-author">Name</label>
+                  <input type="text" id="review-author" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                  <label for="review-comment">Review Content</label>
+                  <textarea id="review-comment" rows="3" placeholder="Share your dining experience..."
+                    required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab content 4: About & Hours -->
+        <div class="tab-content" id="tab-about" style="display: none;">
+          <div class="about-tab-layout">
+            <div class="about-desc">
+              <h3>About the Restaurant</h3>
+              <p id="modal-desc">This restaurant is beloved for its traditional styling and alpine hospitality.</p>
+
+              <div class="about-info-list">
+                <div class="info-item">
+                  <i data-lucide="map-pin"></i>
+                  <div>
+                    <strong>Address</strong>
+                    <span id="modal-address">Hauptstraße 15, 5550 Radstadt</span>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <i data-lucide="phone"></i>
+                  <div>
+                    <strong>Phone</strong>
+                    <span id="modal-phone">+43 6452 7481</span>
+                  </div>
+                </div>
+                <div class="info-item" id="modal-dietary-container">
+                  <i data-lucide="leaf"></i>
+                  <div>
+                    <strong>Dietary Options</strong>
+                    <span id="modal-dietary">Vegetarian, Vegan options available</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="about-hours">
+              <h3>Opening Hours</h3>
+              <ul class="hours-list" id="modal-hours-schedule">
+                <!-- Dynamic opening hours schedule -->
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Decide-O-Matic Slide-in Drawer -->
+  <div class="wheel-panel-overlay" id="wheel-panel-overlay" style="display: none;">
+    <div class="wheel-panel">
+      <div class="wheel-header">
+        <div class="wheel-title">
+          <i data-lucide="dices"></i>
+          <h2>Decide-O-Matic</h2>
+        </div>
+        <button class="wheel-close" id="btn-close-wheel">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <div class="wheel-body">
+        <p class="wheel-instructions">Can't decide where to eat in Radstadt? Let fate choose your culinary adventure!
+          Click below to spin the flavor wheel.</p>
+
+        <div class="wheel-container">
+          <div class="wheel-pointer"></div>
+          <canvas id="wheel-canvas" width="340" height="340"></canvas>
+          <button class="spin-btn" id="btn-spin">SPIN</button>
+        </div>
+
+        <div class="wheel-winner-card" id="wheel-winner-card" style="visibility: hidden;">
+          <span class="winner-label">✨ Destined Selection ✨</span>
+          <h3 id="wheel-winner-name">Zum Kaswurm</h3>
+          <p id="wheel-winner-cuisine">Traditional Pongau Specialties</p>
+          <div class="winner-actions">
+            <button class="btn btn-primary" id="btn-winner-view">Explore Menu</button>
+            <button class="btn btn-secondary" id="btn-winner-spin-again">Spin Again</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart Drawer -->
+  <div class="cart-drawer-overlay" id="cart-drawer-overlay" style="display: none;">
+    <div class="cart-drawer">
+      <div class="cart-header">
+        <div class="cart-title">
+          <i data-lucide="shopping-basket"></i>
+          <h2>Your Takeaway Order</h2>
+        </div>
+        <button class="cart-close" id="btn-close-cart">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <div class="cart-body">
+        <!-- Empty Cart State -->
+        <div class="cart-empty-state" id="cart-empty-view">
+          <i data-lucide="shopping-cart" class="empty-cart-icon"></i>
+          <h3>Your cart is empty</h3>
+          <p>Browse menus of local restaurants in Radstadt and add delicious items to get started.</p>
+        </div>
+
+        <!-- Cart Items State -->
+        <div class="cart-content-state" id="cart-content-view" style="display: none;">
+          <div class="cart-origin-warning">
+            <i data-lucide="info"></i>
+            <span>Ordering takeaway from: <strong id="cart-restaurant-name">Stegerbräu</strong></span>
+          </div>
+
+          <div class="cart-items-list" id="cart-items-container">
+            <!-- Dynamically populated checkout items -->
+          </div>
+
+          <div class="cart-summary-totals">
+            <div class="total-row">
+              <span>Subtotal</span>
+              <span id="cart-subtotal">€0.00</span>
+            </div>
+            <div class="total-row">
+              <span>VAT / MwSt (incl. 10%/20%)</span>
+              <span id="cart-vat">€0.00</span>
+            </div>
+            <div class="total-row delivery-row">
+              <span>Takeaway Packaging Fee</span>
+              <span id="cart-delivery">€1.50</span>
+            </div>
+            <div class="total-row grand-total">
+              <span>Grand Total</span>
+              <span id="cart-grandtotal">€0.00</span>
+            </div>
+          </div>
+
+          <!-- Checkout Form -->
+          <form class="checkout-form" id="checkout-form">
+            <h3>Delivery/Takeaway Info</h3>
+            <div class="form-group">
+              <label for="checkout-name">Name</label>
+              <input type="text" id="checkout-name" placeholder="Full name" required>
+            </div>
+            <div class="form-group">
+              <label for="checkout-address">Delivery Address (Or 'Self Pickup' at restaurant)</label>
+              <input type="text" id="checkout-address" placeholder="e.g. Hauptplatz 4, 5550 Radstadt" required>
+            </div>
+            <div class="form-group">
+              <label for="checkout-phone">Phone Number</label>
+              <input type="tel" id="checkout-phone" placeholder="e.g. +43 664 1234567" required>
+            </div>
+            <div class="form-group">
+              <label for="checkout-payment">Payment Method</label>
+              <select id="checkout-payment" required>
+                <option value="cash" selected>Cash on Delivery/Takeaway</option>
+                <option value="card">Credit Card (Mock Payment)</option>
+                <option value="paypal">PayPal (Mock Payment)</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block btn-checkout-action">Place Takeaway Order</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Delivery Tracker Modal -->
+  <div class="modal-overlay" id="delivery-tracker-modal" style="display: none;">
+    <div class="tracker-card">
+      <div class="tracker-header">
+        <h2>Live Order Tracking</h2>
+        <span class="order-id-badge" id="tracker-order-id">ORD-9284-AT</span>
+      </div>
+
+      <div class="tracker-body">
+        <div class="tracker-restaurant-info">
+          <i data-lucide="chef-hat"></i>
+          <div>
+            <h3 id="tracker-res-name">Stegerbräu</h3>
+            <p>Your alpine cuisine is being prepared with fresh local ingredients.</p>
+          </div>
+        </div>
+
+        <!-- Interactive Progress Steps -->
+        <div class="tracker-timeline">
+          <!-- Step 1 -->
+          <div class="timeline-step active" id="step-received">
+            <div class="step-indicator">
+              <i data-lucide="clipboard-check"></i>
+            </div>
+            <div class="step-details">
+              <h4>Order Received</h4>
+              <p>The restaurant has accepted and printed your order details.</p>
+              <span class="time-stamp" id="time-received">Just now</span>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="timeline-step" id="step-preparing">
+            <div class="step-indicator">
+              <i data-lucide="flame"></i>
+            </div>
+            <div class="step-details">
+              <h4>Cooking & Preparation</h4>
+              <p>Traditional Austrian chefs are preparing your delicious meals.</p>
+              <span class="time-stamp" id="time-preparing">Pending...</span>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="timeline-step" id="step-transit">
+            <div class="step-indicator">
+              <i data-lucide="bike"></i>
+            </div>
+            <div class="step-details">
+              <h4>Out for Delivery / Pickup Ready</h4>
+              <p>Order is packed in thermal ecological containers and heading your way.</p>
+              <span class="time-stamp" id="time-transit">Pending...</span>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="timeline-step" id="step-arrived">
+            <div class="step-indicator">
+              <i data-lucide="smile"></i>
+            </div>
+            <div class="step-details">
+              <h4>Enjoy your Meal!</h4>
+              <p>Mahlzeit! Your freshly cooked food is ready at your door.</p>
+              <span class="time-stamp" id="time-arrived">Pending...</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tracker-summary">
+          <div class="tracker-progress-bar-container">
+            <div class="tracker-progress-bar" id="tracker-bar"></div>
+          </div>
+          <p class="tracker-status-text" id="tracker-status-desc">Validating details with Stegerbräu...</p>
+        </div>
+
+        <button class="btn btn-secondary btn-block" id="btn-close-tracker">Keep App Running in Background</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet Map Integration -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- App Logic Javascript -->
+  <script src="app.js"></script>
+</body>
+
+</html>
